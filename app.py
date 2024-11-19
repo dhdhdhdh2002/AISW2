@@ -1,24 +1,34 @@
-import streamlit as st
 import openai
-import os
+import streamlit as st
 
 # OpenAI API 키 설정
-openai.api_key = st.secrets["OPENAI_API_KEY"]  # GitHub secrets에서 관리할 수 있음
-
-st.title("AI 기반 수면 패턴 도우미")
+openai.api_key = "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"
+# Streamlit 제목
+st.title("영어 단어 뜻 검색기")
 
 # 사용자 입력 받기
-sleep_data = st.text_area("오늘의 수면 데이터를 입력하세요 (예: 수면 시간, 질 등)")
+word = st.text_input("단어를 입력하세요:")
 
-# 수면 패턴 분석
-if st.button("수면 패턴 분석하기"):
-    if sleep_data:
-        # OpenAI API 호출
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=f"이 수면 데이터를 바탕으로 개선할 수 있는 수면 패턴을 제시해주세요: {sleep_data}",
-            max_tokens=150
+# 단어 의미 가져오기
+if word:
+    # OpenAI API를 통해 단어의 뜻을 설명 받기
+    prompt = f"의미랑 발음이랑 영어의 한글 발음 알려줘 '{word}' 이 단어가 들어간 간단한 영어로 된 문장 하나 만들어줘."
+    
+    try:
+        # OpenAI ChatGPT API 호출
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # GPT 모델
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ]
         )
-        st.write(response.choices[0].text.strip())
-    else:
-        st.error("수면 데이터를 입력하세요.")
+        
+        # API 응답에서 뜻 가져오기
+        meaning = response['choices'][0]['message']['content']
+        
+        # Streamlit에 결과 출력
+        st.write(f"'{word}'의 뜻: {meaning}")
+    except Exception as e:
+        st.write(f"오류가 발생했습니다: {e}")
+
