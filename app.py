@@ -2,7 +2,8 @@ import openai
 import streamlit as st
 
 # OpenAI API 키 설정
-openai.api_key = "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"
+openai.api_key = "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"
+
 # Streamlit 제목
 st.title("영어 단어 뜻 검색기")
 
